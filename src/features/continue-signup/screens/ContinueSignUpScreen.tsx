@@ -2,12 +2,12 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } fro
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ChevronLeft } from "@/utils/icons";
-import { FormField } from "../components/FormField";
-import { SelectCurrencyModal } from "../components/SelectCurrencyModal";
-import { useContinueSignUp, useSelectedCurrency } from "../hooks";
-import { SCREEN_TEXTS, PLACEHOLDERS } from "../mocks/fixtures";
-import { submitForm } from "../actions";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { FormField } from "@/features/continue-signup/components/FormField";
+import { SelectCurrencyModal } from "@/features/continue-signup/components/SelectCurrencyModal";
+import { useContinueSignUp, useSelectedCurrency } from "@/features/continue-signup/hooks";
+import { SCREEN_TEXTS, PLACEHOLDERS } from "@/features/continue-signup/mocks/fixtures";
+import { submitForm } from "@/features/continue-signup/actions";
 import type { RootStackParamList } from "@/navigation/types";
 import { cn } from "@/utils/cn";
 
@@ -44,7 +44,6 @@ export default function ContinueSignUpScreen() {
     });
 
     if (success) {
-      // Navigate to next screen on success
       console.log("Form submitted successfully");
     }
   };
@@ -58,19 +57,11 @@ export default function ContinueSignUpScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         {/* Header */}
-        <View className="flex-row items-center px-2 pt-[59px] pb-4">
-          <Pressable
-            onPress={handleBack}
-            className="w-14 h-14 items-center justify-center rounded-full"
-            accessibilityLabel="Go back"
-            accessibilityRole="button"
-          >
-            <ChevronLeft className="text-text-primary" size={24} />
-          </Pressable>
-          <Text className="flex-1 text-2xl font-bold text-text-primary tracking-[-0.48px] pr-14">
-            {SCREEN_TEXTS.title}
-          </Text>
-        </View>
+        <PageHeader
+          title={SCREEN_TEXTS.title}
+          showBackButton
+          onBackPress={handleBack}
+        />
 
         <ScrollView
           className="flex-1"

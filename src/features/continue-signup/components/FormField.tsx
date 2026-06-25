@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 import { AlertCircle, ChevronDown } from "@/utils/icons";
 import { cn } from "@/utils/cn";
 
@@ -30,9 +30,7 @@ export function FormField({
 
   const containerClasses = cn(
     "min-h-12 px-4 py-3 rounded-input border bg-surface",
-    hasError
-      ? "border-border-focus"
-      : "border-border",
+    hasError ? "border-border-focus" : "border-border",
     !editable && "opacity-60"
   );
 
@@ -46,16 +44,20 @@ export function FormField({
       <View className="flex-row items-center gap-2">
         <View className="flex-1">
           {onChangeText ? (
-            <Pressable onPress={onPress} className="flex-row items-center">
-              <Text
-                className={textClasses}
-                onPress={() => onPress?.()}
-              >
-                {value || placeholder}
-              </Text>
-            </Pressable>
+            <TextInput
+              className={textClasses}
+              value={value}
+              placeholder={placeholder}
+              placeholderTextColor="rgba(0,0,0,0.6)"
+              onChangeText={onChangeText}
+              editable={editable}
+              autoCapitalize="words"
+              autoCorrect={false}
+            />
           ) : (
-            <Text className={textClasses}>{value || placeholder}</Text>
+            <Pressable onPress={onPress} className="flex-row items-center">
+              <Text className={textClasses}>{value || placeholder}</Text>
+            </Pressable>
           )}
         </View>
         {showChevron && (
@@ -70,11 +72,11 @@ export function FormField({
       <Text className="text-[13px] font-bold leading-4 text-text-primary">
         {label}
       </Text>
-      
+
       {onPress && !onChangeText ? (
         <Pressable onPress={onPress}>{content}</Pressable>
       ) : (
-        <Pressable onPress={onPress}>{content}</Pressable>
+        content
       )}
 
       {hasError && (
