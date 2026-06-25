@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -7,7 +8,7 @@ import { FormField } from "@/features/continue-signup/components/FormField";
 import { SelectCurrencyModal } from "@/features/continue-signup/components/SelectCurrencyModal";
 import { useContinueSignUp, useSelectedCurrency } from "@/features/continue-signup/hooks";
 import { SCREEN_TEXTS, PLACEHOLDERS } from "@/features/continue-signup/mocks/fixtures";
-import { submitForm } from "@/features/continue-signup/actions";
+import { submitForm, fetchEntityIds } from "@/features/continue-signup/actions";
 import type { RootStackParamList } from "@/navigation/types";
 import { cn } from "@/utils/cn";
 
@@ -21,12 +22,18 @@ export default function ContinueSignUpScreen() {
     currency,
     errors,
     isSubmitting,
+    isLoading,
     setFirstName,
     setLastName,
     setCurrencyModalVisible,
   } = useContinueSignUp();
 
   const selectedCurrency = useSelectedCurrency();
+
+  // Fetch entity IDs on mount
+  useEffect(() => {
+    fetchEntityIds();
+  }, []);
 
   const handleBack = () => {
     navigation.goBack();
@@ -106,10 +113,10 @@ export default function ContinueSignUpScreen() {
         <View className="px-6 pb-6">
           <Pressable
             onPress={handleSubmit}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isLoading}
             className={cn(
               "h-14 rounded-button items-center justify-center",
-              isFormValid && !isSubmitting
+              isFormValid && !isSubmitting && !isLoading
                 ? "bg-brand-purple"
                 : "bg-bg-black-10"
             )}
@@ -119,12 +126,12 @@ export default function ContinueSignUpScreen() {
             <Text
               className={cn(
                 "text-xl font-bold leading-6 tracking-[-0.2px]",
-                isFormValid && !isSubmitting
+                isFormValid && !isSubmitting && !isLoading
                   ? "text-white"
                   : "text-text-black-20"
               )}
             >
-              {isSubmitting ? "Submitting..." : SCREEN_TEXTS.submitButton}
+              {isSubmitting ? "Submitting..." : isLoading ? "Loading..." : SCREEN_TEXTS.submitButton}
             </Text>
           </Pressable>
         </View>

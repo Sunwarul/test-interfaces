@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useContinueSignUpStore } from "../store";
 import { currencies } from "../mocks/fixtures";
-import type { Currency } from "../types";
+import type { Currency, EntityIds } from "../types";
 
 /**
  * Hook to access Continue Sign Up form state and actions
@@ -18,6 +18,8 @@ export function useContinueSignUp() {
     currencySearchQuery: store.currencySearchQuery,
     errors: store.errors,
     isSubmitting: store.isSubmitting,
+    isLoading: store.isLoading,
+    entityIds: store.entityIds,
 
     // Actions
     setFirstName: store.setFirstName,
@@ -26,6 +28,7 @@ export function useContinueSignUp() {
     setCurrencyModalVisible: store.setCurrencyModalVisible,
     setCurrencySearchQuery: store.setCurrencySearchQuery,
     clearErrors: store.clearErrors,
+    setEntityIds: store.setEntityIds,
     reset: store.reset,
   };
 }
@@ -59,4 +62,11 @@ export function useSelectedCurrency(): Currency | undefined {
   return useMemo(() => {
     return currencies.find((c) => c.code === currencyCode);
   }, [currencyCode]);
+}
+
+/**
+ * Hook to get entity IDs
+ */
+export function useEntityIds(): EntityIds {
+  return useContinueSignUpStore((state) => state.entityIds);
 }

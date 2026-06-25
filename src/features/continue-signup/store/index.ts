@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { ContinueSignUpStore, ContinueSignUpState } from "../types";
+import type { ContinueSignUpStore, ContinueSignUpState, EntityIds } from "../types";
 
 const initialState: ContinueSignUpState = {
   firstName: "",
@@ -9,6 +9,8 @@ const initialState: ContinueSignUpState = {
   currencySearchQuery: "",
   errors: {},
   isSubmitting: false,
+  isLoading: false,
+  entityIds: {},
 };
 
 export const useContinueSignUpStore = create<ContinueSignUpStore>((set) => ({
@@ -46,6 +48,10 @@ export const useContinueSignUpStore = create<ContinueSignUpStore>((set) => ({
   clearErrors: () => set({ errors: {} }),
 
   setSubmitting: (submitting: boolean) => set({ isSubmitting: submitting }),
+
+  setLoading: (loading: boolean) => set({ isLoading: loading }),
+
+  setEntityIds: (ids: EntityIds) => set({ entityIds: ids }),
 
   reset: () => set(initialState),
 }));
