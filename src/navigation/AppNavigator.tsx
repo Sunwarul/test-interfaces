@@ -4,6 +4,7 @@ import HomeScreen from "@/screens/HomeScreen";
 import ContinueSignUpScreen from "@/features/continue-signup/screens/ContinueSignUpScreen";
 import ExportScreen from "@/features/export/screens/ExportScreen";
 import ImportScreen from "@/features/import/screens/ImportScreen";
+import DriverMenuScreen from "@/features/driver-menu/screens/DriverMenuScreen";
 
 import type { RootStackParamList } from "./types";
 
@@ -16,6 +17,11 @@ export default function AppNavigator() {
       <Stack.Screen name="ContinueSignUp" component={ContinueSignUpScreen} />
       <Stack.Screen name="Export" component={ExportScreen} />
       <Stack.Screen name="Import" component={ImportScreen} />
+      <Stack.Screen 
+        name="DriverMenu" 
+        component={DriverMenuScreen}
+        options={{ presentation: "transparentModal", animation: "fade" }}
+      />
     </Stack.Navigator>
   );
 }

@@ -5,6 +5,7 @@ export type RootStackParamList = {
   ContinueSignUp: undefined;
   Export: undefined;
   Import: undefined;
+  DriverMenu: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =

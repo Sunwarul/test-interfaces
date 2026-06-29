@@ -19,6 +19,7 @@ export const colors = {
   bgBlack5: "rgba(0,0,0,0.05)",
   bgBlack10: "rgba(0,0,0,0.1)",
   textBlack20: "rgba(0,0,0,0.2)",
+  ratingYellow: "#f8cb19",
 } as const;
 
 export type ColorName = keyof typeof colors;

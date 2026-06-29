@@ -24,6 +24,11 @@ const SCREENS = [
     title: "Import Data",
     description: "Import entity data from file (CSV, Excel, JSON)",
   },
+  {
+    name: "DriverMenu" as const,
+    title: "Driver Menu Drawer",
+    description: "Driver app menu drawer with profile, wallet, orders, and support options",
+  },
 ];
 
 export default function HomeScreen() {

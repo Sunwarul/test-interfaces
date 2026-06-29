@@ -26,6 +26,7 @@ module.exports = {
         "bg-black-5": "rgba(0,0,0,0.05)",
         "bg-black-10": "rgba(0,0,0,0.1)",
         "text-black-20": "rgba(0,0,0,0.2)",
+        "rating-yellow": "#f8cb19",
       },
       borderRadius: {
         card: "8px",
