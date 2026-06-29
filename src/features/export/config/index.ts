@@ -70,9 +70,9 @@ export const EXPORT_FORMAT_OPTIONS: ExportFormatOption[] = [
  */
 export const EXPORT_CONFIG = {
   componentId: "69de77f507219f390b0e37df",
-  moduleId: "69de77f507219f390b0e37e0",
-  sectionId: "69e99737527ce7fcd606c560",
-  interfaceId: "6a240a49fce183e19b5f69eb",
+  moduleId: "69de77f807219f390b0e383e",
+  sectionId: "6a2bf2f20f8989e9060da810",
+  interfaceId: "6a2bf2f9a271d5704d9ac9ac",
   brandServiceId: "6a325fd2eb297824bf0183ea",
   projectId: "68cbaab11eebc9ff240895c6",
 } as const;

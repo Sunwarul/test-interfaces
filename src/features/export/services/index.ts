@@ -75,56 +75,29 @@ export async function exportEntity(
 
   const url = buildExportUrl(params);
 
-  // Get document directory
-  const documentDir = Paths.document;
-
   // Get filename from export type
   const extension = getExtension(exportType);
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
   const filename = `data_export_${timestamp}${extension}`;
 
-  // Create destination file
-  const destinationFile = new File(documentDir, filename);
+  // Create destination file in document directory
+  const destinationFile = new File(Paths.document, filename);
 
   try {
-    // Download the file directly to the document directory
+    // Download the file to the document directory
     const downloadedFile = await File.downloadFileAsync(url, destinationFile);
 
     return {
       success: true,
       filename: downloadedFile.name,
       contentType: getContentType(exportType),
-      contentLength: downloadedFile.size ?? 0,
+      contentLength: 0, // File class doesn't expose size directly
       fileUri: downloadedFile.uri,
     };
-  } catch {
-    // If download fails, try to fetch and write manually
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Export failed: ${response.status} - ${errorText}`);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Export failed: ${error.message}`);
     }
-
-    // Get the array buffer and write to file
-    const arrayBuffer = await response.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-
-    // Create file using Directory.createFile
-    const file = documentDir.createFile(filename, getContentType(exportType));
-
-    // Write bytes to file
-    const writable = file.writableStream();
-    const writer = writable.getWriter();
-    await writer.write(uint8Array);
-    await writer.close();
-
-    return {
-      success: true,
-      filename,
-      contentType: getContentType(exportType),
-      contentLength: uint8Array.length,
-      fileUri: file.uri,
-    };
+    throw new Error("Export failed: Unknown error");
   }
 }
