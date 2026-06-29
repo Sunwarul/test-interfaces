@@ -1,21 +1,41 @@
+/**
+ * Select Currency Modal Component
+ * Currency selection with search functionality
+ */
+
 import { FlatList, Modal, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeft, Search, X } from "@/utils/icons";
 import { CurrencyListItem } from "./CurrencyListItem";
-import { useFilteredCurrencies, useContinueSignUp } from "../hooks";
-import { SCREEN_TEXTS } from "../mocks/fixtures";
+import { useContinueSignUpStore } from "../store";
+import type { Currency } from "../types";
 
-export function SelectCurrencyModal() {
+interface SelectCurrencyModalProps {
+  currencies: Currency[];
+  onSelect: (code: string) => void;
+}
+
+export function SelectCurrencyModal({ currencies, onSelect }: SelectCurrencyModalProps) {
   const {
     currency,
     isCurrencyModalVisible,
     currencySearchQuery,
-    setCurrency,
     setCurrencyModalVisible,
     setCurrencySearchQuery,
-  } = useContinueSignUp();
+  } = useContinueSignUpStore();
 
-  const filteredCurrencies = useFilteredCurrencies();
+  const filteredCurrencies = (() => {
+    if (!currencySearchQuery.trim()) {
+      return currencies;
+    }
+
+    const query = currencySearchQuery.toLowerCase();
+    return currencies.filter(
+      (c) =>
+        c.code.toLowerCase().includes(query) ||
+        c.name.toLowerCase().includes(query)
+    );
+  })();
 
   const handleClose = () => {
     setCurrencyModalVisible(false);
@@ -23,7 +43,7 @@ export function SelectCurrencyModal() {
   };
 
   const handleSelect = (code: string) => {
-    setCurrency(code);
+    onSelect(code);
     handleClose();
   };
 
@@ -46,7 +66,7 @@ export function SelectCurrencyModal() {
             <ChevronLeft className="text-text-primary" size={24} />
           </Pressable>
           <Text className="flex-1 text-2xl font-bold text-text-primary text-center pr-14">
-            {SCREEN_TEXTS.currencyModalTitle}
+            Select Currency
           </Text>
         </View>
 
@@ -55,7 +75,7 @@ export function SelectCurrencyModal() {
           <Search className="text-text-muted" size={20} />
           <TextInput
             className="flex-1 text-base text-text-primary"
-            placeholder={SCREEN_TEXTS.searchPlaceholder}
+            placeholder="Search currency"
             placeholderTextColor="rgba(0,0,0,0.4)"
             value={currencySearchQuery}
             onChangeText={setCurrencySearchQuery}

@@ -1,4 +1,8 @@
-import { useEffect } from "react";
+/**
+ * Continue Sign Up Screen
+ * Fleet Manager registration form with currency selection
+ */
+
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -6,13 +10,37 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { FormField } from "@/features/continue-signup/components/FormField";
 import { SelectCurrencyModal } from "@/features/continue-signup/components/SelectCurrencyModal";
-import { useContinueSignUp, useSelectedCurrency } from "@/features/continue-signup/hooks";
-import { SCREEN_TEXTS, PLACEHOLDERS } from "@/features/continue-signup/mocks/fixtures";
-import { submitForm, fetchEntityIds } from "@/features/continue-signup/actions";
+import { useContinueSignUpStore } from "@/features/continue-signup/store";
 import type { RootStackParamList } from "@/navigation/types";
-import { cn } from "@/utils/cn";
+import type { Currency } from "@/features/continue-signup/types";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+// Default currencies from Figma design (when API enum is not available)
+const DEFAULT_CURRENCIES: Currency[] = [
+  { code: "USD", name: "US Dollar" },
+  { code: "EUR", name: "Euro" },
+  { code: "RUB", name: "Russian Ruble" },
+  { code: "ALL", name: "Albanian Lek" },
+  { code: "DZD", name: "Algerian Dinar" },
+  { code: "AOA", name: "Angolan Kwanza" },
+  { code: "XCD", name: "Eastern Caribbean Dollar" },
+  { code: "ARS", name: "Argentine Peso" },
+  { code: "AMD", name: "Armenian Dram" },
+  { code: "AWG", name: "Aruban Florin" },
+  { code: "AUD", name: "Australia Dollar" },
+  { code: "AZN", name: "Azerbaijan Manat" },
+];
+
+// Screen texts
+const SCREEN_TEXTS = {
+  title: "Continue Signing Up",
+  description: "Please enter your name as it appears on your ID or passport",
+  submitButton: "Continue as a Fleet Manager",
+  firstNamePlaceholder: "Enter first name",
+  lastNamePlaceholder: "Enter last name",
+  currencyPlaceholder: "Select currency",
+} as const;
 
 export default function ContinueSignUpScreen() {
   const navigation = useNavigation<NavigationProp>();
@@ -20,20 +48,17 @@ export default function ContinueSignUpScreen() {
     firstName,
     lastName,
     currency,
-    errors,
-    isSubmitting,
-    isLoading,
     setFirstName,
     setLastName,
+    setCurrency,
     setCurrencyModalVisible,
-  } = useContinueSignUp();
+  } = useContinueSignUpStore();
 
-  const selectedCurrency = useSelectedCurrency();
+  // Get currencies - in production, these would come from API enum
+  const currencies = DEFAULT_CURRENCIES;
 
-  // Fetch entity IDs on mount
-  useEffect(() => {
-    fetchEntityIds();
-  }, []);
+  // Get selected currency display
+  const selectedCurrency = currencies.find((c) => c.code === currency);
 
   const handleBack = () => {
     navigation.goBack();
@@ -43,16 +68,9 @@ export default function ContinueSignUpScreen() {
     setCurrencyModalVisible(true);
   };
 
-  const handleSubmit = async () => {
-    const success = await submitForm({
-      firstName,
-      lastName,
-      currency,
-    });
-
-    if (success) {
-      console.log("Form submitted successfully");
-    }
+  const handleSubmit = () => {
+    // In production, this would call the validate/create API
+    console.log("Form submitted:", { firstName, lastName, currency });
   };
 
   const isFormValid = firstName.trim() && lastName.trim() && currency;
@@ -85,24 +103,21 @@ export default function ContinueSignUpScreen() {
             <FormField
               label="First Name *"
               value={firstName}
-              placeholder={PLACEHOLDERS.firstName}
-              error={errors.firstName}
+              placeholder={SCREEN_TEXTS.firstNamePlaceholder}
               onChangeText={setFirstName}
             />
 
             <FormField
               label="Last Name *"
               value={lastName}
-              placeholder={PLACEHOLDERS.lastName}
-              error={errors.lastName}
+              placeholder={SCREEN_TEXTS.lastNamePlaceholder}
               onChangeText={setLastName}
             />
 
             <FormField
               label="Currency *"
               value={selectedCurrency ? `${selectedCurrency.code} - ${selectedCurrency.name}` : ""}
-              placeholder={PLACEHOLDERS.currency}
-              error={errors.currency}
+              placeholder={SCREEN_TEXTS.currencyPlaceholder}
               onPress={handleCurrencyPress}
               showChevron
             />
@@ -113,31 +128,25 @@ export default function ContinueSignUpScreen() {
         <View className="px-6 pb-6">
           <Pressable
             onPress={handleSubmit}
-            disabled={isSubmitting || isLoading}
-            className={cn(
-              "h-14 rounded-button items-center justify-center",
-              isFormValid && !isSubmitting && !isLoading
-                ? "bg-brand-purple"
-                : "bg-bg-black-10"
-            )}
+            disabled={!isFormValid}
+            className={`h-14 rounded-button items-center justify-center ${
+              isFormValid ? "bg-primary" : "bg-bg-black-10"
+            }`}
             accessibilityLabel={SCREEN_TEXTS.submitButton}
             accessibilityRole="button"
           >
             <Text
-              className={cn(
-                "text-xl font-bold leading-6 tracking-[-0.2px]",
-                isFormValid && !isSubmitting && !isLoading
-                  ? "text-white"
-                  : "text-text-black-20"
-              )}
+              className={`text-xl font-bold leading-6 tracking-[-0.2px] ${
+                isFormValid ? "text-white" : "text-text-black-20"
+              }`}
             >
-              {isSubmitting ? "Submitting..." : isLoading ? "Loading..." : SCREEN_TEXTS.submitButton}
+              {SCREEN_TEXTS.submitButton}
             </Text>
           </Pressable>
         </View>
 
         {/* Currency Modal */}
-        <SelectCurrencyModal />
+        <SelectCurrencyModal currencies={currencies} onSelect={setCurrency} />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
