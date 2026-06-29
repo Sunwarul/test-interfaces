@@ -28,6 +28,37 @@ export interface DriverMenuApiResponse {
   };
 }
 
+// Clone service types
+export interface CloneRequestParams {
+  component_id: string;
+  module_id: string;
+  section_id: string;
+  interface_id: string;
+  brand_service_id: string;
+  project_id: string;
+}
+
+export interface CloneResult {
+  id: string;
+  endpoint_id: string;
+  table_name: string;
+}
+
+export interface CloneResponse {
+  success: boolean;
+  message: string;
+  data: {
+    main: CloneResult;
+    related: Record<string, unknown>;
+  };
+  meta: {
+    default_values: Record<string, unknown>;
+    session_values: Record<string, unknown>;
+  };
+  execution_time: number;
+  timestamp: string;
+}
+
 // Menu item types
 export interface MainMenuItem {
   id: string;
