@@ -19,6 +19,11 @@ const SCREENS = [
     title: "Export Data",
     description: "Export entity data in various formats (CSV, Excel, PDF, JSON)",
   },
+  {
+    name: "Import" as const,
+    title: "Import Data",
+    description: "Import entity data from file (CSV, Excel, JSON)",
+  },
 ];
 
 export default function HomeScreen() {

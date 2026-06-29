@@ -8,8 +8,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  FileText,
   Filter,
   Home,
+  Loader2,
   Menu,
   Plus,
   Search,
@@ -33,8 +35,10 @@ cssInterop(ChevronDown, iconClassNameConfig);
 cssInterop(ChevronLeft, iconClassNameConfig);
 cssInterop(ChevronRight, iconClassNameConfig);
 cssInterop(Download, iconClassNameConfig);
+cssInterop(FileText, iconClassNameConfig);
 cssInterop(Filter, iconClassNameConfig);
 cssInterop(Home, iconClassNameConfig);
+cssInterop(Loader2, iconClassNameConfig);
 cssInterop(Menu, iconClassNameConfig);
 cssInterop(Plus, iconClassNameConfig);
 cssInterop(Search, iconClassNameConfig);
@@ -51,8 +55,10 @@ export {
   ChevronLeft,
   ChevronRight,
   Download,
+  FileText,
   Filter,
   Home,
+  Loader2,
   Menu,
   Plus,
   Search,
