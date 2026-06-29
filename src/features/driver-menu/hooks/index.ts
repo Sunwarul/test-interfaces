@@ -36,3 +36,17 @@ export function useCloneRecord() {
     },
   });
 }
+
+export function useDeleteRecord() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => driverMenuService.deleteRecord(id),
+    onSuccess: () => {
+      // Invalidate profile queries to reflect deletion
+      queryClient.invalidateQueries({
+        queryKey: DRIVER_MENU_QUERY_KEYS.profile,
+      });
+    },
+  });
+}

@@ -73,3 +73,28 @@ export interface SmallMenuItem {
   icon: 'users' | 'globe' | 'headphones' | 'message';
   onPress?: () => void;
 }
+
+// Delete service types
+export interface DeleteRequestParams {
+  component_id: string;
+  module_id: string;
+  section_id: string;
+  interface_id: string;
+  brand_service_id: string;
+  project_id: string;
+}
+
+export interface DeletedEntity {
+  id: string;
+  deletion_type: 'soft' | 'hard';
+}
+
+export interface DeleteResponse {
+  success: boolean;
+  message: string;
+  data: {
+    deleted_entity: DeletedEntity;
+    modified_entities: Record<string, unknown>;
+    deleted_entities: Record<string, unknown>;
+  };
+}
