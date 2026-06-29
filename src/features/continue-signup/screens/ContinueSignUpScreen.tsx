@@ -1,22 +1,39 @@
 /**
  * Continue Sign Up Screen
- * Fleet Manager registration form with currency selection
+ * Fleet Manager registration form with CREATE API integration
  */
 
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from "react-native";
+import { useCallback, useMemo } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronDown } from "lucide-react-native";
+
 import { PageHeader } from "@/components/layout/PageHeader";
-import { FormField } from "@/features/continue-signup/components/FormField";
 import { SelectCurrencyModal } from "@/features/continue-signup/components/SelectCurrencyModal";
 import { useContinueSignUpStore } from "@/features/continue-signup/store";
+import { useCreateEntity } from "@/features/continue-signup/hooks";
+import {
+  continueSignUpSchema,
+  type ContinueSignUpFormValues,
+  type Currency,
+} from "@/features/continue-signup/types";
 import type { RootStackParamList } from "@/navigation/types";
-import type { Currency } from "@/features/continue-signup/types";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-// Default currencies from Figma design (when API enum is not available)
+// Default currencies from Figma design
 const DEFAULT_CURRENCIES: Currency[] = [
   { code: "USD", name: "US Dollar" },
   { code: "EUR", name: "Euro" },
@@ -40,40 +57,81 @@ const SCREEN_TEXTS = {
   firstNamePlaceholder: "Enter first name",
   lastNamePlaceholder: "Enter last name",
   currencyPlaceholder: "Select currency",
+  firstNameLabel: "First Name *",
+  lastNameLabel: "Last Name *",
+  currencyLabel: "Currency *",
+  firstNameError: "Please enter your first name",
+  lastNameError: "Please enter your last name",
+  currencyError: "Please select a currency",
 } as const;
 
 export default function ContinueSignUpScreen() {
   const navigation = useNavigation<NavigationProp>();
   const {
-    firstName,
-    lastName,
     currency,
-    setFirstName,
-    setLastName,
     setCurrency,
     setCurrencyModalVisible,
   } = useContinueSignUpStore();
 
-  // Get currencies - in production, these would come from API enum
   const currencies = DEFAULT_CURRENCIES;
 
-  // Get selected currency display
-  const selectedCurrency = currencies.find((c) => c.code === currency);
+  const selectedCurrency = useMemo(() => {
+    return currencies.find((c) => c.code === currency);
+  }, [currencies, currency]);
 
-  const handleBack = () => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<ContinueSignUpFormValues>({
+    resolver: zodResolver(continueSignUpSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      currency: "",
+    },
+    mode: "onBlur",
+  });
+
+  const createEntity = useCreateEntity();
+
+  const handleBack = useCallback(() => {
     navigation.goBack();
-  };
+  }, [navigation]);
 
-  const handleCurrencyPress = () => {
+  const handleCurrencyPress = useCallback(() => {
     setCurrencyModalVisible(true);
-  };
+  }, [setCurrencyModalVisible]);
 
-  const handleSubmit = () => {
-    // In production, this would call the validate/create API
-    console.log("Form submitted:", { firstName, lastName, currency });
-  };
+  const handleCurrencySelect = useCallback(
+    (code: string) => {
+      setCurrency(code);
+      setValue("currency", code, { shouldValidate: true });
+    },
+    [setCurrency, setValue]
+  );
 
-  const isFormValid = firstName.trim() && lastName.trim() && currency;
+  const onSubmit = useCallback(
+    (data: ContinueSignUpFormValues) => {
+      createEntity.mutate(data, {
+        onSuccess: (response) => {
+          // Navigate on success
+          console.log("Entity created:", response.data.main.id);
+          // Add navigation logic here based on app flow
+        },
+        onError: (error) => {
+          // Handle error - could show toast or inline error
+          console.error("Create failed:", error.message);
+        },
+      });
+    },
+    [createEntity]
+  );
+
+  const isSubmitting = createEntity.isPending;
+  const isFormValid = watch("firstName") && watch("lastName") && watch("currency");
 
   return (
     <SafeAreaView className="flex-1 bg-surface">
@@ -100,53 +158,146 @@ export default function ContinueSignUpScreen() {
 
           {/* Form Fields */}
           <View className="gap-4">
-            <FormField
-              label="First Name *"
-              value={firstName}
-              placeholder={SCREEN_TEXTS.firstNamePlaceholder}
-              onChangeText={setFirstName}
-            />
+            {/* First Name Field */}
+            <View className="gap-2">
+              <Text className="text-[13px] font-bold leading-4 text-text-primary">
+                {SCREEN_TEXTS.firstNameLabel}
+              </Text>
+              <Controller
+                control={control}
+                name="firstName"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View
+                    className={`min-h-12 px-4 py-3 rounded-input border bg-surface ${
+                      errors.firstName ? "border-border-focus" : "border-border"
+                    }`}
+                  >
+                    <TextInput
+                      className={`text-base leading-6 tracking-[-0.16px] flex-1 ${
+                        value ? "text-text-primary" : "text-text-secondary"
+                      }`}
+                      value={value}
+                      placeholder={SCREEN_TEXTS.firstNamePlaceholder}
+                      placeholderTextColor="rgba(0,0,0,0.6)"
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      autoCapitalize="words"
+                      autoCorrect={false}
+                    />
+                  </View>
+                )}
+              />
+              {errors.firstName && (
+                <View className="flex-row items-center gap-1 px-4">
+                  <Text className="text-[13px] leading-4 text-error">
+                    {errors.firstName.message}
+                  </Text>
+                </View>
+              )}
+            </View>
 
-            <FormField
-              label="Last Name *"
-              value={lastName}
-              placeholder={SCREEN_TEXTS.lastNamePlaceholder}
-              onChangeText={setLastName}
-            />
+            {/* Last Name Field */}
+            <View className="gap-2">
+              <Text className="text-[13px] font-bold leading-4 text-text-primary">
+                {SCREEN_TEXTS.lastNameLabel}
+              </Text>
+              <Controller
+                control={control}
+                name="lastName"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View
+                    className={`min-h-12 px-4 py-3 rounded-input border bg-surface ${
+                      errors.lastName ? "border-border-focus" : "border-border"
+                    }`}
+                  >
+                    <TextInput
+                      className={`text-base leading-6 tracking-[-0.16px] flex-1 ${
+                        value ? "text-text-primary" : "text-text-secondary"
+                      }`}
+                      value={value}
+                      placeholder={SCREEN_TEXTS.lastNamePlaceholder}
+                      placeholderTextColor="rgba(0,0,0,0.6)"
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      autoCapitalize="words"
+                      autoCorrect={false}
+                    />
+                  </View>
+                )}
+              />
+              {errors.lastName && (
+                <View className="flex-row items-center gap-1 px-4">
+                  <Text className="text-[13px] leading-4 text-error">
+                    {errors.lastName.message}
+                  </Text>
+                </View>
+              )}
+            </View>
 
-            <FormField
-              label="Currency *"
-              value={selectedCurrency ? `${selectedCurrency.code} - ${selectedCurrency.name}` : ""}
-              placeholder={SCREEN_TEXTS.currencyPlaceholder}
-              onPress={handleCurrencyPress}
-              showChevron
-            />
+            {/* Currency Field */}
+            <View className="gap-2">
+              <Text className="text-[13px] font-bold leading-4 text-text-primary">
+                {SCREEN_TEXTS.currencyLabel}
+              </Text>
+              <Pressable onPress={handleCurrencyPress}>
+                <View
+                  className={`min-h-12 px-4 py-3 rounded-input border bg-surface flex-row items-center ${
+                    errors.currency ? "border-border-focus" : "border-border"
+                  }`}
+                >
+                  <Text
+                    className={`text-base leading-6 tracking-[-0.16px] flex-1 ${
+                      selectedCurrency
+                        ? "text-text-primary"
+                        : "text-text-secondary"
+                    }`}
+                  >
+                    {selectedCurrency
+                      ? `${selectedCurrency.code} - ${selectedCurrency.name}`
+                      : SCREEN_TEXTS.currencyPlaceholder}
+                  </Text>
+                  <ChevronDown className="text-text-secondary" size={20} />
+                </View>
+              </Pressable>
+              {errors.currency && (
+                <View className="flex-row items-center gap-1 px-4">
+                  <Text className="text-[13px] leading-4 text-error">
+                    {errors.currency.message}
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
         </ScrollView>
 
         {/* Submit Button */}
         <View className="px-6 pb-6">
           <Pressable
-            onPress={handleSubmit}
-            disabled={!isFormValid}
+            onPress={handleSubmit(onSubmit)}
+            disabled={isSubmitting || !isFormValid}
             className={`h-14 rounded-button items-center justify-center ${
-              isFormValid ? "bg-primary" : "bg-bg-black-10"
+              isFormValid && !isSubmitting ? "bg-primary" : "bg-bg-black-10"
             }`}
             accessibilityLabel={SCREEN_TEXTS.submitButton}
             accessibilityRole="button"
           >
             <Text
               className={`text-xl font-bold leading-6 tracking-[-0.2px] ${
-                isFormValid ? "text-white" : "text-text-black-20"
+                isFormValid && !isSubmitting
+                  ? "text-white"
+                  : "text-text-black-20"
               }`}
             >
-              {SCREEN_TEXTS.submitButton}
+              {isSubmitting ? "Submitting..." : SCREEN_TEXTS.submitButton}
             </Text>
           </Pressable>
         </View>
 
         {/* Currency Modal */}
-        <SelectCurrencyModal currencies={currencies} onSelect={setCurrency} />
+        <SelectCurrencyModal
+          currencies={currencies}
+          onSelect={handleCurrencySelect}
+        />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

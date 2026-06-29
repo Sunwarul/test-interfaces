@@ -1,40 +1,62 @@
 /**
  * Continue Sign Up Feature Hooks
- * Helper hooks for currency filtering and selection
+ * React Query hooks for API operations
  */
 
-import { useMemo } from "react";
-import type { Currency } from "../types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createEntity, CONTINUE_SIGNUP_QUERY_KEYS } from "../services";
+import type { ContinueSignUpFormValues, EntityCreateResponse } from "../types";
+
+/**
+ * Hook to create a new entity record
+ */
+export function useCreateEntity() {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    EntityCreateResponse,
+    Error,
+    ContinueSignUpFormValues
+  >({
+    mutationFn: (values: ContinueSignUpFormValues) =>
+      createEntity({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        currency: values.currency,
+      }),
+    onSuccess: () => {
+      // Invalidate any list queries if needed
+      queryClient.invalidateQueries({
+        queryKey: CONTINUE_SIGNUP_QUERY_KEYS.create,
+      });
+    },
+  });
+}
 
 /**
  * Hook to filter currencies based on search query
  */
-export function useFilteredCurrencies(
-  currencies: Currency[],
+export function useFilteredCurrencies<T extends { code: string; name: string }>(
+  currencies: T[],
   searchQuery: string
-): Currency[] {
-  return useMemo(() => {
-    if (!searchQuery.trim()) {
-      return currencies;
-    }
-
+): T[] {
+  const filtered = currencies.filter((currency) => {
+    if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
-    return currencies.filter(
-      (currency) =>
-        currency.code.toLowerCase().includes(query) ||
-        currency.name.toLowerCase().includes(query)
+    return (
+      currency.code.toLowerCase().includes(query) ||
+      currency.name.toLowerCase().includes(query)
     );
-  }, [currencies, searchQuery]);
+  });
+  return filtered;
 }
 
 /**
  * Hook to get selected currency details
  */
-export function useSelectedCurrency(
-  currencies: Currency[],
+export function useSelectedCurrency<T extends { code: string; name: string }>(
+  currencies: T[],
   currencyCode: string
-): Currency | undefined {
-  return useMemo(() => {
-    return currencies.find((c) => c.code === currencyCode);
-  }, [currencies, currencyCode]);
+): T | undefined {
+  return currencies.find((c) => c.code === currencyCode);
 }
