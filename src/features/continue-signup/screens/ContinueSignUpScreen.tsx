@@ -1,6 +1,6 @@
 /**
  * Continue Sign Up Screen
- * Fleet Manager registration form with CREATE API integration
+ * Fleet Manager registration form with VALIDATE and CREATE API integration
  */
 
 import { useCallback, useMemo } from "react";
@@ -23,7 +23,7 @@ import { ChevronDown } from "lucide-react-native";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SelectCurrencyModal } from "@/features/continue-signup/components/SelectCurrencyModal";
 import { useContinueSignUpStore } from "@/features/continue-signup/store";
-import { useCreateEntity } from "@/features/continue-signup/hooks";
+import { useCreateEntity, useValidateEntity } from "@/features/continue-signup/hooks";
 import {
   continueSignUpSchema,
   type ContinueSignUpFormValues,
@@ -95,6 +95,7 @@ export default function ContinueSignUpScreen() {
     mode: "onBlur",
   });
 
+  const validateEntity = useValidateEntity();
   const createEntity = useCreateEntity();
 
   const handleBack = useCallback(() => {
@@ -115,22 +116,41 @@ export default function ContinueSignUpScreen() {
 
   const onSubmit = useCallback(
     (data: ContinueSignUpFormValues) => {
-      createEntity.mutate(data, {
-        onSuccess: (response) => {
-          // Navigate on success
-          console.log("Entity created:", response.data.main.id);
-          // Add navigation logic here based on app flow
+      // First validate the fields
+      validateEntity.mutate(
+        {
+          checks: [
+            { field: "firstName", value: data.firstName },
+            { field: "lastName", value: data.lastName },
+          ],
+          match_mode: "each",
         },
-        onError: (error) => {
-          // Handle error - could show toast or inline error
-          console.error("Create failed:", error.message);
-        },
-      });
+        {
+          onSuccess: () => {
+            // Validation passed, proceed with create
+            createEntity.mutate(data, {
+              onSuccess: (response) => {
+                // Navigate on success
+                console.log("Entity created:", response.data.main.id);
+                // Add navigation logic here based on app flow
+              },
+              onError: (error) => {
+                // Handle create error
+                console.error("Create failed:", error.message);
+              },
+            });
+          },
+          onError: (error) => {
+            // Handle validation error
+            console.error("Validation failed:", error.message);
+          },
+        }
+      );
     },
-    [createEntity]
+    [validateEntity, createEntity]
   );
 
-  const isSubmitting = createEntity.isPending;
+  const isSubmitting = validateEntity.isPending || createEntity.isPending;
   const isFormValid = watch("firstName") && watch("lastName") && watch("currency");
 
   return (

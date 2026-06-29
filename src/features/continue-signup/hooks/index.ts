@@ -4,8 +4,33 @@
  */
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createEntity, CONTINUE_SIGNUP_QUERY_KEYS } from "../services";
-import type { ContinueSignUpFormValues, EntityCreateResponse } from "../types";
+import { createEntity, validateEntity, CONTINUE_SIGNUP_QUERY_KEYS } from "../services";
+import type {
+  ContinueSignUpFormValues,
+  EntityCreateResponse,
+  EntityValidateBody,
+  EntityValidateResponse,
+} from "../types";
+
+/**
+ * Hook to validate entity fields
+ */
+export function useValidateEntity() {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    EntityValidateResponse,
+    Error,
+    EntityValidateBody
+  >({
+    mutationFn: (body: EntityValidateBody) => validateEntity(body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: CONTINUE_SIGNUP_QUERY_KEYS.validate,
+      });
+    },
+  });
+}
 
 /**
  * Hook to create a new entity record

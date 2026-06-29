@@ -1,6 +1,6 @@
 /**
  * Continue Sign Up Feature Types
- * Fleet Manager registration form with CREATE API integration
+ * Fleet Manager registration form with CREATE and VALIDATE API integration
  */
 
 import { z } from "zod";
@@ -51,6 +51,58 @@ export interface ContinueSignUpUIActions {
 }
 
 export type ContinueSignUpUIStore = ContinueSignUpUIState & ContinueSignUpUIActions;
+
+// ============================================
+// VALIDATE Service Types
+// ============================================
+
+/**
+ * Single field check for validation
+ */
+export interface ValidateCheck {
+  field: string;
+  value: string;
+}
+
+/**
+ * API Query params for /entities/validate
+ */
+export interface EntityValidateParams {
+  component_id: string;
+  module_id: string;
+  section_id: string;
+  interface_id: string;
+  brand_service_id: string;
+  project_id: string;
+}
+
+/**
+ * Request body for /entities/validate
+ */
+export interface EntityValidateBody {
+  checks: ValidateCheck[];
+  match_mode: "each" | "all";
+}
+
+/**
+ * API Response from /entities/validate endpoint
+ */
+export interface EntityValidateResponse {
+  success: boolean;
+  message: string;
+  data: {
+    main: {
+      id: string;
+      endpoint_id: string;
+      table_name: string;
+    };
+    related: Record<string, unknown>;
+  };
+}
+
+// ============================================
+// CREATE Service Types
+// ============================================
 
 /**
  * API Response Types from /entities/create endpoint
