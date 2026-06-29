@@ -14,6 +14,11 @@ const SCREENS = [
     title: "Continue Signing Up",
     description: "Fleet Manager registration form with currency selection",
   },
+  {
+    name: "Export" as const,
+    title: "Export Data",
+    description: "Export entity data in various formats (CSV, Excel, PDF, JSON)",
+  },
 ];
 
 export default function HomeScreen() {

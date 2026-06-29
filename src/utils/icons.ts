@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Download,
   Filter,
   Home,
   Menu,
@@ -31,6 +32,7 @@ cssInterop(Check, iconClassNameConfig);
 cssInterop(ChevronDown, iconClassNameConfig);
 cssInterop(ChevronLeft, iconClassNameConfig);
 cssInterop(ChevronRight, iconClassNameConfig);
+cssInterop(Download, iconClassNameConfig);
 cssInterop(Filter, iconClassNameConfig);
 cssInterop(Home, iconClassNameConfig);
 cssInterop(Menu, iconClassNameConfig);
@@ -48,6 +50,7 @@ export {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Download,
   Filter,
   Home,
   Menu,
