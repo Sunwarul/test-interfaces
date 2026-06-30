@@ -4,23 +4,21 @@
  */
 
 import { File, Paths } from "expo-file-system";
-import { env } from "@/config/env";
+import { apiClient } from "@/lib/apiClient";
 import { EXPORT_CONFIG, EXPORT_DEFAULT_PARAMS, type ExportType } from "../config";
 import type { ExportParams, ExportResponse } from "../types";
 
 /**
- * Build URL with query parameters
+ * Extract filename from content-disposition header
  */
-function buildExportUrl(params: ExportParams): string {
-  const url = new URL(`${env.apiBaseUrl}/entities/export`);
+function extractFilename(contentDisposition: string | null): string | null {
+  if (!contentDisposition) return null;
 
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
-      url.searchParams.append(key, String(value));
-    }
-  });
-
-  return url.toString();
+  const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+  if (match && match[1]) {
+    return match[1].replace(/['"]/g, "");
+  }
+  return null;
 }
 
 /**
@@ -52,10 +50,23 @@ function getExtension(exportType: ExportType): string {
 }
 
 /**
+ * Convert ArrayBuffer to base64 string (React Native compatible)
+ */
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
+/**
  * Export entity data as file
  * GET /entities/export
  *
- * Fetches the file and saves it to the device's document directory
+ * Uses apiClient for automatic Bearer token injection
+ * Downloads the file and saves it to the cache directory
  */
 export async function exportEntity(
   exportType: ExportType,
@@ -73,26 +84,50 @@ export async function exportEntity(
     page_limit: overrides?.page_limit ?? EXPORT_DEFAULT_PARAMS.pageLimit,
   };
 
-  const url = buildExportUrl(params);
+  // Build URL with query parameters
+  const url = `${process.env.EXPO_PUBLIC_API_BASE_URL ?? ""}/entities/export`;
+  const queryParams = new URLSearchParams();
 
-  // Get filename from export type
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      queryParams.append(key, String(value));
+    }
+  });
+
+  const fullUrl = `${url}?${queryParams.toString()}`;
+
+  // Get extension and generate filename
   const extension = getExtension(exportType);
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
   const filename = `data_export_${timestamp}${extension}`;
 
-  // Create destination file in document directory
-  const destinationFile = new File(Paths.document, filename);
+  // Create destination file in cache directory using new expo-file-system API
+  const destinationFile = new File(Paths.cache, filename);
 
   try {
-    // Download the file to the document directory
-    const downloadedFile = await File.downloadFileAsync(url, destinationFile);
+    // Use apiClient to get the response with headers
+    const response = await apiClient.get(fullUrl, {
+      responseType: "arraybuffer",
+    });
+
+    // Extract headers
+    const contentDisposition = response.headers["content-disposition"] as string | null;
+    const contentType = response.headers["content-type"] as string | null;
+    const contentLength = response.headers["content-length"] as string | null;
+
+    // Extract filename from header or use generated one
+    const extractedFilename = extractFilename(contentDisposition) ?? filename;
+
+    // Convert ArrayBuffer to base64 and write to file
+    const base64Data = arrayBufferToBase64(response.data);
+    await destinationFile.write(base64Data);
 
     return {
       success: true,
-      filename: downloadedFile.name,
-      contentType: getContentType(exportType),
-      contentLength: 0, // File class doesn't expose size directly
-      fileUri: downloadedFile.uri,
+      filename: extractedFilename,
+      contentType: contentType ?? getContentType(exportType),
+      contentLength: contentLength ? parseInt(contentLength, 10) : 0,
+      fileUri: destinationFile.uri,
     };
   } catch (error) {
     if (error instanceof Error) {
