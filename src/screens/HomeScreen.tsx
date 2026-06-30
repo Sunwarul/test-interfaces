@@ -29,6 +29,11 @@ const SCREENS = [
     title: "Driver Menu Drawer",
     description: "Driver app menu drawer with profile, wallet, orders, and support options",
   },
+  {
+    name: "DriverOrders" as const,
+    title: "Driver Orders",
+    description: "Orders list with earnings chart, tabs, search, and date range filter",
+  },
 ];
 
 export default function HomeScreen() {

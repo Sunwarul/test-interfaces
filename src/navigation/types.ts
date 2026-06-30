@@ -6,6 +6,7 @@ export type RootStackParamList = {
   Export: undefined;
   Import: undefined;
   DriverMenu: undefined;
+  DriverOrders: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
