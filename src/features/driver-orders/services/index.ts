@@ -1,6 +1,6 @@
 import { apiClient } from "@/lib/apiClient";
-import { DRIVER_ORDERS_CONFIG, CLONE_CONFIG } from "../config";
-import type { DriverOrdersResponse, CloneResponse, CloneParams } from "../types";
+import { DRIVER_ORDERS_CONFIG, CLONE_CONFIG, DELETE_CONFIG } from "../config";
+import type { DriverOrdersResponse, CloneResponse, CloneParams, DeleteResponse, DeleteParams } from "../types";
 
 /**
  * Fetch a single order record by ID
@@ -69,6 +69,31 @@ export async function cloneOrder(
         interface_id: CLONE_CONFIG.interfaceId,
         brand_service_id: CLONE_CONFIG.brandServiceId,
         project_id: CLONE_CONFIG.projectId,
+        ...params,
+      },
+    }
+  );
+  return response.data;
+}
+
+/**
+ * Delete an order record
+ * DELETE /entities/delete/{id}
+ */
+export async function deleteOrder(
+  id: string,
+  params?: Partial<DeleteParams>
+): Promise<DeleteResponse> {
+  const response = await apiClient.delete<DeleteResponse>(
+    `/entities/delete/${id}`,
+    {
+      params: {
+        component_id: DELETE_CONFIG.componentId,
+        module_id: DELETE_CONFIG.moduleId,
+        section_id: DELETE_CONFIG.sectionId,
+        interface_id: DELETE_CONFIG.interfaceId,
+        brand_service_id: DELETE_CONFIG.brandServiceId,
+        project_id: DELETE_CONFIG.projectId,
         ...params,
       },
     }

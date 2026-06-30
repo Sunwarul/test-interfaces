@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchOrderById, fetchOrders, cloneOrder } from "../services";
+import { fetchOrderById, fetchOrders, cloneOrder, deleteOrder } from "../services";
 import { DRIVER_ORDERS_QUERY_KEYS } from "../config";
 import type { OrderFilters } from "../types";
 
@@ -52,6 +52,27 @@ export function useCloneOrder() {
         queryKey: DRIVER_ORDERS_QUERY_KEYS.list(),
       });
       // Invalidate the specific order detail if needed
+      queryClient.invalidateQueries({
+        queryKey: DRIVER_ORDERS_QUERY_KEYS.detail(id),
+      });
+    },
+  });
+}
+
+/**
+ * Hook to delete an order record
+ */
+export function useDeleteOrder() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => deleteOrder(id),
+    onSuccess: (_data, id) => {
+      // Invalidate the list query to refresh data after deletion
+      queryClient.invalidateQueries({
+        queryKey: DRIVER_ORDERS_QUERY_KEYS.list(),
+      });
+      // Invalidate the specific order detail if it exists
       queryClient.invalidateQueries({
         queryKey: DRIVER_ORDERS_QUERY_KEYS.detail(id),
       });

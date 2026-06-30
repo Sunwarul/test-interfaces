@@ -73,6 +73,32 @@ export interface CloneParams {
   project_id: string;
 }
 
+// Delete response schema
+export const DeleteResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.object({
+    deleted_entity: z.object({
+      id: z.string(),
+      deletion_type: z.enum(["soft", "hard"]),
+    }),
+    modified_entities: z.record(z.string(), z.unknown()),
+    deleted_entities: z.record(z.string(), z.unknown()),
+  }),
+});
+
+export type DeleteResponse = z.infer<typeof DeleteResponseSchema>;
+
+// Delete params interface
+export interface DeleteParams {
+  component_id: string;
+  module_id: string;
+  section_id: string;
+  interface_id: string;
+  brand_service_id: string;
+  project_id: string;
+}
+
 // API response schema
 export const DriverOrdersResponseSchema = z.object({
   success: z.boolean(),

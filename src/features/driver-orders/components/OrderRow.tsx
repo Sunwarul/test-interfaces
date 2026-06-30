@@ -1,4 +1,5 @@
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import { Trash2 } from "lucide-react-native";
 import { OrderMarker } from "./OrderMarker";
 import type { OrderItem } from "../types";
 
@@ -6,10 +7,19 @@ interface OrderRowProps {
   order: OrderItem;
   onPress?: () => void;
   onClone?: (orderId: string) => void;
+  onDelete?: (orderId: string) => void;
   isCloning?: boolean;
+  isDeleting?: boolean;
 }
 
-export function OrderRow({ order, onPress, onClone, isCloning }: OrderRowProps) {
+export function OrderRow({ 
+  order, 
+  onPress, 
+  onClone, 
+  onDelete, 
+  isCloning, 
+  isDeleting 
+}: OrderRowProps) {
   const formatTime = (isoString: string) => {
     const date = new Date(isoString);
     return date.toLocaleTimeString("en-US", {
@@ -26,6 +36,12 @@ export function OrderRow({ order, onPress, onClone, isCloning }: OrderRowProps) 
   const handleClonePress = () => {
     if (onClone && !isCloning) {
       onClone(order.id);
+    }
+  };
+
+  const handleDeletePress = () => {
+    if (onDelete && !isDeleting) {
+      onDelete(order.id);
     }
   };
 
@@ -62,6 +78,21 @@ export function OrderRow({ order, onPress, onClone, isCloning }: OrderRowProps) 
                 <ActivityIndicator size="small" color="#6054ba" />
               ) : (
                 <Text className="text-sm text-primary font-medium">Clone</Text>
+              )}
+            </Pressable>
+          )}
+          {onDelete && (
+            <Pressable
+              className="p-2"
+              onPress={handleDeletePress}
+              disabled={isDeleting}
+              accessibilityLabel="Delete order"
+              accessibilityRole="button"
+            >
+              {isDeleting ? (
+                <ActivityIndicator size="small" color="#fc5959" />
+              ) : (
+                <Trash2 size={18} color="#fc5959" />
               )}
             </Pressable>
           )}

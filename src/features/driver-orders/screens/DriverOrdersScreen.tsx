@@ -7,7 +7,7 @@ import { SearchBar } from "../components/SearchBar";
 import { DateRangeChip } from "../components/DateRangeChip";
 import { OrderRow } from "../components/OrderRow";
 import { DatePickerModal } from "../components/DatePickerModal";
-import { useOrders, useCloneOrder } from "../hooks";
+import { useOrders, useCloneOrder, useDeleteOrder } from "../hooks";
 import type { OrderItem, EarningsData } from "../types";
 import { type TimePeriod } from "../config";
 import { format } from "date-fns";
@@ -99,6 +99,9 @@ export default function DriverOrdersScreen() {
 
   // Clone mutation hook
   const cloneMutation = useCloneOrder();
+
+  // Delete mutation hook
+  const deleteMutation = useDeleteOrder();
 
   // Raw API order data type (snake_case from API)
   interface RawApiOrder {
@@ -221,6 +224,19 @@ export default function DriverOrdersScreen() {
     });
   };
 
+  const handleDeleteOrder = (orderId: string) => {
+    deleteMutation.mutate(orderId, {
+      onSuccess: (data) => {
+        // Handle successful delete
+        console.log("Order deleted successfully:", data.data.deleted_entity.id);
+      },
+      onError: (error) => {
+        // Handle delete error
+        console.error("Failed to delete order:", error);
+      },
+    });
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <PageHeader title="Orders" showBackButton />
@@ -232,7 +248,9 @@ export default function DriverOrdersScreen() {
           <OrderRow
             order={item}
             onClone={handleCloneOrder}
+            onDelete={handleDeleteOrder}
             isCloning={cloneMutation.isPending}
+            isDeleting={deleteMutation.isPending}
           />
         )}
         renderSectionHeader={({ section: { title } }) => (
