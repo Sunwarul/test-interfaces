@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchOrderById, fetchOrders } from "../services";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchOrderById, fetchOrders, cloneOrder } from "../services";
 import { DRIVER_ORDERS_QUERY_KEYS } from "../config";
 import type { OrderFilters } from "../types";
 
@@ -35,5 +35,26 @@ export function useOrders(filters?: Partial<OrderFilters>) {
       }),
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 15 * 60 * 1000, // 15 minutes
+  });
+}
+
+/**
+ * Hook to clone an order record
+ */
+export function useCloneOrder() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => cloneOrder(id),
+    onSuccess: (_data, id) => {
+      // Invalidate the list query to refresh data after cloning
+      queryClient.invalidateQueries({
+        queryKey: DRIVER_ORDERS_QUERY_KEYS.list(),
+      });
+      // Invalidate the specific order detail if needed
+      queryClient.invalidateQueries({
+        queryKey: DRIVER_ORDERS_QUERY_KEYS.detail(id),
+      });
+    },
   });
 }

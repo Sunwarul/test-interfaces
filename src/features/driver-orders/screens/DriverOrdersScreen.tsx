@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { View, Text, SectionList } from "react-native";
+import { View, Text, SectionList, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TripChart } from "../components/TripChart";
@@ -7,78 +7,12 @@ import { SearchBar } from "../components/SearchBar";
 import { DateRangeChip } from "../components/DateRangeChip";
 import { OrderRow } from "../components/OrderRow";
 import { DatePickerModal } from "../components/DatePickerModal";
+import { useOrders, useCloneOrder } from "../hooks";
 import type { OrderItem, EarningsData } from "../types";
 import { type TimePeriod } from "../config";
 import { format } from "date-fns";
 
-// Mock data for demo purposes (since API returns empty datasets)
-const MOCK_ORDERS: OrderItem[] = [
-  {
-    id: "1",
-    orderNumber: "#3018",
-    itemCount: 1,
-    price: 6.5,
-    pickupTime: "2024-03-16T10:10:00Z",
-    dropoffTime: "2024-03-16T10:39:00Z",
-    pickupAddress: {
-      id: "p1",
-      name: "Juice N Bite",
-      address: "Avenue 2 ResDubai, Discovery Gardens",
-      type: "pickup",
-    },
-    dropoffAddress: {
-      id: "d1",
-      name: "",
-      address: "No 812, 6 Floor, Septa Building, Washing Ave. Manchester",
-      type: "dropoff",
-    },
-    status: "completed",
-  },
-  {
-    id: "2",
-    orderNumber: "#3017",
-    itemCount: 2,
-    price: 12.0,
-    pickupTime: "2024-03-16T09:30:00Z",
-    dropoffTime: "2024-03-16T10:00:00Z",
-    pickupAddress: {
-      id: "p2",
-      name: "Pizza Palace",
-      address: "123 Main Street, Downtown",
-      type: "pickup",
-    },
-    dropoffAddress: {
-      id: "d2",
-      name: "",
-      address: "456 Oak Avenue, Suburb",
-      type: "dropoff",
-    },
-    status: "completed",
-  },
-  {
-    id: "3",
-    orderNumber: "#3016",
-    itemCount: 1,
-    price: 8.5,
-    pickupTime: "2024-03-15T14:00:00Z",
-    dropoffTime: "2024-03-15T14:45:00Z",
-    pickupAddress: {
-      id: "p3",
-      name: "Burger Joint",
-      address: "789 Fast Food Lane",
-      type: "pickup",
-    },
-    dropoffAddress: {
-      id: "d3",
-      name: "",
-      address: "321 Elm Street, Westside",
-      type: "dropoff",
-    },
-    status: "completed",
-  },
-];
-
-// Mock earnings data
+// Mock earnings data (in production, this would come from API)
 const MOCK_EARNINGS: Record<TimePeriod, EarningsData> = {
   Today: {
     totalAmount: 980.5,
@@ -150,8 +84,91 @@ export default function DriverOrdersScreen() {
   const [dateRange, setDateRange] = useState<{ start: Date; end: Date } | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  // Use mock data for now since API returns empty datasets
-  const orders = MOCK_ORDERS;
+  // Fetch orders using React Query
+  const {
+    data: ordersResponse,
+    isLoading: isLoadingOrders,
+    isError: isErrorOrders,
+    error: ordersError,
+    refetch: refetchOrders,
+  } = useOrders({
+    period: selectedPeriod,
+    searchQuery,
+    dateRange: dateRange ?? undefined,
+  });
+
+  // Clone mutation hook
+  const cloneMutation = useCloneOrder();
+
+  // Raw API order data type (snake_case from API)
+  interface RawApiOrder {
+    id: string;
+    order_number?: string;
+    orderNumber?: string;
+    item_count?: number;
+    itemCount?: number;
+    price?: number;
+    pickup_time?: string;
+    pickupTime?: string;
+    dropoff_time?: string;
+    dropoffTime?: string;
+    pickup_address?: {
+      id?: string;
+      name?: string;
+      address?: string;
+    };
+    pickupAddress?: {
+      id?: string;
+      name?: string;
+      address?: string;
+    };
+    dropoff_address?: {
+      id?: string;
+      name?: string;
+      address?: string;
+    };
+    dropoffAddress?: {
+      id?: string;
+      name?: string;
+      address?: string;
+    };
+    status?: string;
+  }
+
+  // Transform API response to OrderItem array
+  // In production, this would parse the actual API response structure
+  const orders = useMemo((): OrderItem[] => {
+    if (!ordersResponse?.data?.datasets) {
+      return [];
+    }
+    // Transform API datasets to OrderItem format
+    // This adapts to the actual API response structure
+    const datasets = ordersResponse.data.datasets;
+    const ordersData = (datasets.orders ?? []) as RawApiOrder[];
+    return ordersData.map((item) => ({
+      id: item.id,
+      orderNumber: item.order_number ?? item.orderNumber ?? `#${item.id?.slice(-4) ?? "0000"}`,
+      itemCount: item.item_count ?? item.itemCount ?? 1,
+      price: item.price ?? 0,
+      pickupTime: item.pickup_time ?? item.pickupTime ?? new Date().toISOString(),
+      dropoffTime: item.dropoff_time ?? item.dropoffTime ?? new Date().toISOString(),
+      pickupAddress: {
+        id: item.pickup_address?.id ?? `p-${item.id}`,
+        name: item.pickup_address?.name ?? "",
+        address: item.pickup_address?.address ?? "",
+        type: "pickup" as const,
+      },
+      dropoffAddress: {
+        id: item.dropoff_address?.id ?? `d-${item.id}`,
+        name: item.dropoff_address?.name ?? "",
+        address: item.dropoff_address?.address ?? "",
+        type: "dropoff" as const,
+      },
+      status: item.status ?? "completed",
+    }));
+  }, [ordersResponse]);
+
+  // Use mock earnings data (would be fetched from API in production)
   const earnings = MOCK_EARNINGS[selectedPeriod];
 
   // Filter orders based on search
@@ -191,6 +208,19 @@ export default function DriverOrdersScreen() {
     setShowDatePicker(false);
   };
 
+  const handleCloneOrder = (orderId: string) => {
+    cloneMutation.mutate(orderId, {
+      onSuccess: (data) => {
+        // Handle successful clone - data contains the new cloned record info
+        console.log("Order cloned successfully:", data.data.main.id);
+      },
+      onError: (error) => {
+        // Handle clone error
+        console.error("Failed to clone order:", error);
+      },
+    });
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <PageHeader title="Orders" showBackButton />
@@ -198,7 +228,13 @@ export default function DriverOrdersScreen() {
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <OrderRow order={item} />}
+        renderItem={({ item }) => (
+          <OrderRow
+            order={item}
+            onClone={handleCloneOrder}
+            isCloning={cloneMutation.isPending}
+          />
+        )}
         renderSectionHeader={({ section: { title } }) => (
           <View className="px-6 py-2">
             <Text className="text-sm font-bold text-text-muted">{title}</Text>
@@ -240,9 +276,28 @@ export default function DriverOrdersScreen() {
           </>
         }
         ListEmptyComponent={
-          <View className="flex-1 items-center justify-center py-20">
-            <Text className="text-base text-text-secondary">No orders found</Text>
-          </View>
+          isLoadingOrders ? (
+            <View className="flex-1 items-center justify-center py-20">
+              <ActivityIndicator size="large" color="#6054ba" />
+              <Text className="mt-4 text-base text-text-secondary">Loading orders...</Text>
+            </View>
+          ) : isErrorOrders ? (
+            <View className="flex-1 items-center justify-center py-20">
+              <Text className="text-base text-error">
+                {ordersError?.message ?? "Failed to load orders"}
+              </Text>
+              <Text
+                className="mt-2 text-sm text-primary"
+                onPress={() => refetchOrders()}
+              >
+                Tap to retry
+              </Text>
+            </View>
+          ) : (
+            <View className="flex-1 items-center justify-center py-20">
+              <Text className="text-base text-text-secondary">No orders found</Text>
+            </View>
+          )
         }
         contentContainerClassName="pb-6"
         stickySectionHeadersEnabled={false}

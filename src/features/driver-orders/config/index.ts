@@ -8,6 +8,16 @@ export const DRIVER_ORDERS_CONFIG = {
   projectId: "68cbaab11eebc9ff240895c6",
 } as const;
 
+// Clone service config
+export const CLONE_CONFIG = {
+  componentId: "69de77f507219f390b0e37df",
+  moduleId: "69de77f507219f390b0e37f7",
+  sectionId: "69de77f507219f390b0e37f8",
+  interfaceId: "6a23efb0fce183e19b5f69df",
+  brandServiceId: "69de77f507219f390b0e37dd",
+  projectId: "68cbaab11eebc9ff240895c6",
+} as const;
+
 // Query key constants
 export const DRIVER_ORDERS_QUERY_KEYS = {
   list: (orgId?: string) =>
@@ -16,6 +26,11 @@ export const DRIVER_ORDERS_QUERY_KEYS = {
       : ["driver-orders", "list"] as const,
   detail: (id: string) => ["driver-orders", "detail", id] as const,
   earnings: (period: string) => ["driver-orders", "earnings", period] as const,
+} as const;
+
+// Clone mutation query keys
+export const CLONE_QUERY_KEYS = {
+  clone: (id: string) => ["driver-orders", "clone", id] as const,
 } as const;
 
 // Time period options

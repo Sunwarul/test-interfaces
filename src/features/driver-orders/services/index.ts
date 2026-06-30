@@ -1,6 +1,6 @@
 import { apiClient } from "@/lib/apiClient";
-import { DRIVER_ORDERS_CONFIG } from "../config";
-import type { DriverOrdersResponse } from "../types";
+import { DRIVER_ORDERS_CONFIG, CLONE_CONFIG } from "../config";
+import type { DriverOrdersResponse, CloneResponse, CloneParams } from "../types";
 
 /**
  * Fetch a single order record by ID
@@ -43,6 +43,32 @@ export async function fetchOrders(params?: {
         interface_id: DRIVER_ORDERS_CONFIG.interfaceId,
         brand_service_id: DRIVER_ORDERS_CONFIG.brandServiceId,
         project_id: DRIVER_ORDERS_CONFIG.projectId,
+        ...params,
+      },
+    }
+  );
+  return response.data;
+}
+
+/**
+ * Clone an order record
+ * POST /entities/clone/{id}
+ */
+export async function cloneOrder(
+  id: string,
+  params?: Partial<CloneParams>
+): Promise<CloneResponse> {
+  const response = await apiClient.post<CloneResponse>(
+    `/entities/clone/${id}`,
+    {},
+    {
+      params: {
+        component_id: CLONE_CONFIG.componentId,
+        module_id: CLONE_CONFIG.moduleId,
+        section_id: CLONE_CONFIG.sectionId,
+        interface_id: CLONE_CONFIG.interfaceId,
+        brand_service_id: CLONE_CONFIG.brandServiceId,
+        project_id: CLONE_CONFIG.projectId,
         ...params,
       },
     }

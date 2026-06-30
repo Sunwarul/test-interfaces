@@ -41,6 +41,38 @@ export const EarningsDataSchema = z.object({
 
 export type EarningsData = z.infer<typeof EarningsDataSchema>;
 
+// Clone response schema
+export const CloneResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.object({
+    main: z.object({
+      id: z.string(),
+      endpoint_id: z.string(),
+      table_name: z.string(),
+    }),
+    related: z.record(z.string(), z.unknown()),
+  }),
+  meta: z.object({
+    default_values: z.record(z.string(), z.unknown()),
+    session_values: z.record(z.string(), z.unknown()),
+  }),
+  execution_time: z.number(),
+  timestamp: z.string(),
+});
+
+export type CloneResponse = z.infer<typeof CloneResponseSchema>;
+
+// Clone params interface
+export interface CloneParams {
+  component_id: string;
+  module_id: string;
+  section_id: string;
+  interface_id: string;
+  brand_service_id: string;
+  project_id: string;
+}
+
 // API response schema
 export const DriverOrdersResponseSchema = z.object({
   success: z.boolean(),
