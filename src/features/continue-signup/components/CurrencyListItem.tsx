@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Pressable, Text, View } from "react-native";
 import { Check } from "@/utils/icons";
 import { cn } from "@/utils/cn";

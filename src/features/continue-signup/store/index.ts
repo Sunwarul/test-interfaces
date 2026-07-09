@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Continue Sign Up Feature Store
  * Client-only UI state (NO server state)

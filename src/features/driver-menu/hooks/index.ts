@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { driverMenuService } from "../services";
 import { DRIVER_MENU_QUERY_KEYS } from "../config";

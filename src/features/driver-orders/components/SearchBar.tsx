@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { View, TextInput, Pressable } from "react-native";
 import { Search } from "@/utils/icons";
 

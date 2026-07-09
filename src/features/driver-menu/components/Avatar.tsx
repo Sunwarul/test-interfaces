@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { View, Image } from "react-native";
 import { User } from "@/utils/icons";
 

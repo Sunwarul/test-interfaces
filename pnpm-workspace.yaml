@@ -1,9 +1,9 @@
+# pnpm v11 syntax: explicit build-script decisions (false = reviewed, do not run).
+# Replaces the pre-v11 ignoredBuiltDependencies list; without an explicit
+# decision per package, pnpm v11 exits 1 (ERR_PNPM_IGNORED_BUILDS) on install.
 allowBuilds:
-  '@parcel/watcher': true
-  '@swc/core': true
-  msw: true
-  sharp: true
-  unrs-resolver: true
-ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver
+  '@parcel/watcher': false
+  '@swc/core': false
+  msw: false
+  sharp: false
+  unrs-resolver: false

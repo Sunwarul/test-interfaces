@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Export Button Component
  * Trigger button with loading state

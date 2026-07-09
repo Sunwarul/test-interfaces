@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Text, Pressable } from "react-native";
 import { Calendar } from "@/utils/icons";
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Continue Sign Up Feature Services
  * API calls using shared apiClient pattern

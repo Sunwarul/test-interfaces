@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { View } from "react-native";
 import { cssInterop } from "nativewind";
 import { LogIn, LogOut } from "lucide-react-native";

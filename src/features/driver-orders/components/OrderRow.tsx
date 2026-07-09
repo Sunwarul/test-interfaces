@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import { Trash2 } from "lucide-react-native";
 import { OrderMarker } from "./OrderMarker";

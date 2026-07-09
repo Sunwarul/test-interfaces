@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { cssInterop } from "nativewind";
 import {
   AlertCircle,

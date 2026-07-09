@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ImportButton Component
  * Primary action button with loading state

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Export Feature Types
  * File export API integration

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";

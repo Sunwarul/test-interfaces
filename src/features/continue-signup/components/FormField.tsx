@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { ReactNode } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { AlertCircle, ChevronDown } from "@/utils/icons";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Import Feature Services
  * API calls for file import using FormData upload

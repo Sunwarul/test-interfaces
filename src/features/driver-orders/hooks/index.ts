@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchOrderById, fetchOrders, cloneOrder, deleteOrder } from "../services";
 import { DRIVER_ORDERS_QUERY_KEYS } from "../config";

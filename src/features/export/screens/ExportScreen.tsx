@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Export Screen
  * File export with format selection

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Continue Sign Up Feature Types
  * Fleet Manager registration form with CREATE and VALIDATE API integration

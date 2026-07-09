@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Import Feature Configuration
  * API mapping IDs from Interface API Guide

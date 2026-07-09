@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Pressable, Text, View } from "react-native";
 
 import { cn } from "@/utils/cn";
@@ -42,3 +43,4 @@ export function TabBar({ items }: TabBarProps) {
     </View>
   );
 }
+

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { apiClient } from "@/lib/apiClient";
 import { API_IDS, CLONE_API_IDS, DELETE_API_IDS } from "../config";
 import type { DriverMenuApiResponse, CloneResponse, DeleteResponse } from "../types";

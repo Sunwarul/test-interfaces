@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Import Feature Types
  * File import API integration

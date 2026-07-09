@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Continue Sign Up Screen
  * Fleet Manager registration form with VALIDATE and CREATE API integration

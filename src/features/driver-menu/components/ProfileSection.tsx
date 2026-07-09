@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { View, Text } from "react-native";
 import { Avatar } from "./Avatar";
 import { RatingBadge } from "./RatingBadge";

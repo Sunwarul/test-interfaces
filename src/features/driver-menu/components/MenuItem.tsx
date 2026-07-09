@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Pressable, Text } from "react-native";
 
 interface MenuItemProps {

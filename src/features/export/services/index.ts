@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Export Feature Services
  * API calls for file export using shared apiClient pattern

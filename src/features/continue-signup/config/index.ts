@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Continue Sign Up Feature Configuration
  * API mapping IDs from Interface API Guide

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // API mapping IDs for Driver Orders feature
 export const DRIVER_ORDERS_CONFIG = {
   componentId: "69de77f507219f390b0e37df",

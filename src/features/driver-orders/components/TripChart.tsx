@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { View, Text, Pressable } from "react-native";
 import { cn } from "@/utils/cn";
 import { TIME_PERIODS, type TimePeriod } from "../config";

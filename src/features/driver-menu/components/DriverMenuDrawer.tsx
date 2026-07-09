@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { View, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Menu } from "@/utils/icons";

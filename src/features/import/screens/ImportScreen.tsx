@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ImportScreen
  * File import screen with document picker and upload

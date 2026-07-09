@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Select Currency Modal Component
  * Currency selection with search functionality

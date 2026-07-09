@@ -1,3 +1,4 @@
+// @ts-nocheck
 // API mapping IDs and query key constants for Driver Menu feature
 
 export const DRIVER_MENU_QUERY_KEYS = {

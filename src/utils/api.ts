@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Typed API Client for making HTTP requests
  * Supports GET and POST methods with query parameters

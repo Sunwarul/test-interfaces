@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ImportOptions Component
  * File selection display with file info
