@@ -25,6 +25,7 @@ import {
     FileText,
     Globe,
     ChevronRight,
+    MessageCircleQuestion,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -92,6 +93,7 @@ const navCategories: NavCategory[] = [
         label: "OTHER",
         items: [
             { label: "Translation Center", href: "/translation", icon: <Globe className="size-5" /> },
+            { label: "Get in Touch", href: "/get-in-touch", icon: <MessageCircleQuestion className="size-5" /> },
         ],
     },
 ];
