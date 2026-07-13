@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -19,42 +19,41 @@ export function DebouncedSearchInput({
     debounceMs = 300,
     className,
 }: DebouncedSearchInputProps) {
-    const [localValue, setLocalValue] = useState(value);
-    const onChangeRef = useRef(onChange);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const onChangeRef = useRef(onChange);
 
     // Keep onChange ref stable
     useEffect(() => {
         onChangeRef.current = onChange;
     }, [onChange]);
 
-    // Sync external value
+    // Cleanup timeout on unmount
     useEffect(() => {
-        setLocalValue(value);
-    }, [value]);
-
-    // Debounce
-    useEffect(() => {
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-        }
-        timeoutRef.current = setTimeout(() => {
-            onChangeRef.current(localValue);
-        }, debounceMs);
         return () => {
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [localValue, debounceMs]);
+    }, []);
+
+    // Debounced onChange
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value;
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => {
+            onChangeRef.current(newValue);
+        }, debounceMs);
+    }, [debounceMs]);
 
     return (
         <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-black/40 pointer-events-none" />
             <Input
                 type="search"
-                value={localValue}
-                onChange={(e) => setLocalValue(e.target.value)}
+                defaultValue={value}
+                onChange={handleChange}
                 placeholder={placeholder}
                 className={`pl-10 h-11 ${className ?? ""}`}
             />
