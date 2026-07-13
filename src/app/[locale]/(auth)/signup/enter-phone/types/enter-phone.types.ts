@@ -36,3 +36,16 @@ export interface EnterPhoneFormData {
   countryCode: string;
   countryName: string;
 }
+
+export interface CreatePhoneEntryResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    main: {
+      id: string;
+      endpoint_id: string;
+      table_name: string;
+    };
+    related: Record<string, unknown>;
+  };
+}

@@ -2,18 +2,21 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { PhoneInput } from "./PhoneInput";
 import { SocialLoginButtons } from "./SocialLoginButtons";
 import { RiderBadge } from "./RiderBadge";
 import { usePhoneValidation } from "../hooks/usePhoneValidation";
 import { useCountries } from "../hooks/useCountrySearch";
+import { createPhoneEntry } from "../services/enter-phone.service";
 import type { Country } from "../types/enter-phone.types";
 import { ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 
 export function EnterPhonePage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -69,6 +72,20 @@ export function EnterPhonePage() {
     }
   }, [validationData]);
 
+  // Create phone entry mutation
+  const createMutation = useMutation({
+    mutationFn: createPhoneEntry,
+    onSuccess: () => {
+      toast.success("Phone number registered successfully!");
+      queryClient.invalidateQueries({ queryKey: ["phone-validation"] });
+      // Navigate to next step (OTP verification)
+      router.push("/signup/verify-otp");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to register phone number");
+    },
+  });
+
   const handleContinue = () => {
     if (!phoneNumber || phoneNumber.length < 8) {
       setValidationError("Please enter a valid phone number");
@@ -81,15 +98,15 @@ export function EnterPhonePage() {
       return;
     }
 
-    // Proceed to next step
-    toast.success("Phone number verified!");
-    // In a real app, this would navigate to OTP verification or next signup step
-    // router.push("/signup/verify-otp");
+    // Submit phone number to API
+    createMutation.mutate(fullPhoneNumber);
   };
 
   const handleCountrySelect = (country: Country) => {
     setSelectedCountry(country);
   };
+
+  const isSubmitting = createMutation.isPending;
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -161,10 +178,10 @@ export function EnterPhonePage() {
       <div className="fixed bottom-0 left-0 right-0 px-6 pb-8 space-y-3">
         <Button
           onClick={handleContinue}
-          disabled={isValidating || !phoneNumber || !!validationError}
+          disabled={isValidating || !phoneNumber || !!validationError || isSubmitting}
           className="w-full h-[56px] rounded-[32px] bg-[var(--color-brand-purple,#6054ba)] text-white text-[20px] font-bold hover:bg-[var(--color-brand-purple,#6054ba)]/90 disabled:opacity-50"
         >
-          {isValidating ? "Verifying..." : "Continue as a Rider"}
+          {isSubmitting ? "Submitting..." : isValidating ? "Verifying..." : "Continue as a Rider"}
         </Button>
         <Button
           variant="outline"
