@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { PhoneInput } from "./PhoneInput";
 import { SocialLoginButtons } from "./SocialLoginButtons";
-import { FleetManagerBadge } from "./FleetManagerBadge";
+import { RiderBadge } from "./RiderBadge";
 import { usePhoneValidation } from "../hooks/usePhoneValidation";
 import { useCountries } from "../hooks/useCountrySearch";
 import type { Country } from "../types/enter-phone.types";
@@ -103,7 +103,7 @@ export function EnterPhonePage() {
           <ChevronLeft className="w-6 h-6" />
         </button>
         <h1 className="flex-1 text-[24px] font-bold tracking-[-0.48px]">
-          Fleet Manager
+          Rider
         </h1>
       </div>
 
@@ -111,7 +111,7 @@ export function EnterPhonePage() {
       <div className="flex-1 flex flex-col items-center px-6">
         {/* Fleet Manager Badge */}
         <div className="mt-[195px] mb-10">
-          <FleetManagerBadge />
+          <RiderBadge />
         </div>
 
         {/* Form */}
@@ -164,14 +164,14 @@ export function EnterPhonePage() {
           disabled={isValidating || !phoneNumber || !!validationError}
           className="w-full h-[56px] rounded-[32px] bg-[var(--color-brand-purple,#6054ba)] text-white text-[20px] font-bold hover:bg-[var(--color-brand-purple,#6054ba)]/90 disabled:opacity-50"
         >
-          {isValidating ? "Verifying..." : "Continue as a Fleet Manager"}
+          {isValidating ? "Verifying..." : "Continue as a Rider"}
         </Button>
         <Button
           variant="outline"
           disabled
           className="w-full h-[56px] rounded-[32px] bg-[rgba(0,0,0,0.1)] border-0 text-[rgba(0,0,0,0.2)] text-[20px] font-bold cursor-not-allowed"
         >
-          Continue as a Fleet Manager
+          Continue as a Rider
         </Button>
       </div>
     </div>
