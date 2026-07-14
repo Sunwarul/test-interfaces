@@ -58,6 +58,14 @@
     --color-brand-orange: #ff5634;
     --color-brand-purple: #6054ba;
     --color-brand-yellow: #f8cb19;
+    /* Black scale */
+    --color-black-100: #000000;
+    --color-black-60: rgba(0, 0, 0, 0.6);
+    --color-black-40: rgba(0, 0, 0, 0.4);
+    --color-black-20: rgba(0, 0, 0, 0.2);
+    --color-black-10: rgba(0, 0, 0, 0.1);
+    /* White scale */
+    --color-white-100: #ffffff;
     /* Status colors */
     --color-status-pending-bg: #fcf3cc;
     --color-status-pending-text: #957c1c;
@@ -73,7 +81,7 @@
     /*
      * Font stack — `--font-dm-sans` is set on <html> by next/font/google in
      * src/app/layout.tsx. System fallbacks render until the web font is ready.
-     * Swap to a different family by updating both this `:root` block and the
+     * Swap to a different family by updating both this :root block and the
      * matching next/font import in layout.tsx.
      */
     --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, -apple-system,
@@ -170,6 +178,13 @@
     letter-spacing: -3px;
 }
 
+@utility text-title-1-mobile {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 48px;
+    letter-spacing: -1.6px;
+}
+
 @utility text-body-normal {
     font-size: 16px;
     font-weight: 400;
@@ -214,4 +229,11 @@
     font-weight: 500;
     line-height: 24px;
     letter-spacing: -0.16px;
+}
+
+@utility text-button-large {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: -0.2px;
 }
