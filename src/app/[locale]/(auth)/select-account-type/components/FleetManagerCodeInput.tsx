@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface FleetManagerCodeInputProps {
   value: string;
@@ -26,21 +27,22 @@ export function FleetManagerCodeInput({
 
       <div
         className={`
-          flex items-center min-h-12 px-4 py-3 rounded-3xl 
-          border bg-[rgba(255,255,255,0.1)] border-[rgba(0,0,0,0.1)]
-          ${error ? "border-[#fc5959]" : ""}
+          relative
+          ${error ? "[&_input]:border-[#fc5959] [&_input]:text-[#fc5959]" : ""}
         `}
       >
-        <input
+        <Input
           type="text"
           name="fleetManagerCode"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className={`
-            flex-1 bg-transparent outline-none text-body-normal
+            h-12 px-4 py-3 rounded-3xl 
+            bg-[rgba(255,255,255,0.1)] border-[rgba(0,0,0,0.1)]
+            text-body-normal
             placeholder:text-[rgba(0,0,0,0.4)]
-            ${error ? "text-[#fc5959]" : "text-black"}
+            ${error ? "border-[#fc5959] text-[#fc5959]" : "text-black"}
           `}
         />
       </div>
