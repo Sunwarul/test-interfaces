@@ -3,27 +3,26 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { X, ChevronRight, Users, Wallet, ClipboardList, DollarSign, Gift, UserPlus, Globe, HelpCircle, MessageCircle } from "lucide-react";
+import { X, ChevronRight, Wallet, ClipboardList, DollarSign, Users, Globe, HelpCircle, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { DriverMenuItem } from "./DriverMenuItem";
 
 interface DriverMenuDrawerProps {
     isOpen: boolean;
     onClose: () => void;
     userName?: string;
-    userSubtitle?: string;
+    userRating?: number;
+    userReviews?: number;
 }
 
-const menuItems = [
+const mainMenuItems = [
     { label: "Wallet", href: "/earnings", icon: Wallet },
     { label: "Orders", href: "/requests", icon: ClipboardList },
-    { label: "Team Management", href: "/team", icon: Users },
     { label: "Service Price", href: "/service-price", icon: DollarSign },
 ];
 
 const bottomMenuItems = [
-    { label: "Add More Riders", href: "/add-rider", icon: UserPlus },
-    { label: "Language", href: "/driver-home/language", icon: Globe },
+    { label: "Become a Fleet Manager", href: "/add-rider", icon: Users },
+    { label: "Language", href: "/language", icon: Globe },
     { label: "FAQ", href: "/faq", icon: HelpCircle },
     { label: "Chat with Support", href: "/support", icon: MessageCircle },
 ];
@@ -32,7 +31,8 @@ export function DriverMenuDrawer({
     isOpen,
     onClose,
     userName = "John Doe",
-    userSubtitle = "4 Active Riders",
+    userRating = 4.8,
+    userReviews = 2148,
 }: DriverMenuDrawerProps) {
     return (
         <>
@@ -93,9 +93,17 @@ export function DriverMenuDrawer({
                             <h2 className="text-title-3 font-bold text-black-100 truncate">
                                 {userName}
                             </h2>
-                            <p className="text-caption-normal text-black-60">
-                                {userSubtitle}
-                            </p>
+                            <div className="flex items-center gap-1">
+                                {/* Rating Badge */}
+                                <div className="inline-flex items-center justify-center w-8 h-8 bg-brand-yellow border-2 border-white-100 rounded-[18px]">
+                                    <span className="text-caption-bold text-black-100 leading-none">
+                                        {userRating}
+                                    </span>
+                                </div>
+                                <span className="text-caption-normal text-black-60">
+                                    ({userReviews.toLocaleString()})
+                                </span>
+                            </div>
                         </div>
 
                         {/* Chevron */}
@@ -104,7 +112,7 @@ export function DriverMenuDrawer({
 
                     {/* Menu Items */}
                     <nav className="flex flex-col">
-                        {menuItems.map((item) => (
+                        {mainMenuItems.map((item) => (
                             <Link
                                 key={item.href}
                                 href={item.href}
@@ -114,7 +122,7 @@ export function DriverMenuDrawer({
                             </Link>
                         ))}
 
-                        {/* Section Header */}
+                        {/* Section Header - Earn By Referring */}
                         <div className="px-6 py-2">
                             <span className="text-title-1-desktop font-bold text-black-100">
                                 Earn By Referring
@@ -131,7 +139,7 @@ export function DriverMenuDrawer({
                             href={item.href}
                             className="flex items-center gap-2 px-6 py-2 text-body-normal text-black-100 hover:bg-black-10 transition-colors"
                         >
-                            <item.icon className="w-6 h-6" />
+                            <item.icon className="w-6 h-6 shrink-0" />
                             <span>{item.label}</span>
                         </Link>
                     ))}
