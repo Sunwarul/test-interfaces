@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, ChevronLeft } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useLanguages } from "../hooks/useLanguages";
@@ -49,13 +49,13 @@ export function LanguagePage({ className }: LanguagePageProps) {
             {/* Header */}
             <div className="relative z-10 bg-white-100 pt-[59px] pb-4 px-6">
                 <div className="flex items-center gap-3">
-                    {/* Back Button */}
+                    {/* Close Button */}
                     <button
                         onClick={handleBack}
                         className="w-14 h-14 bg-white rounded-[32px] shadow-[0_0_24px_rgba(0,0,0,0.2)] flex items-center justify-center hover:bg-gray-50 transition-colors"
-                        aria-label="Go back"
+                        aria-label="Close"
                     >
-                        <ChevronLeft className="w-6 h-6 text-black-100" />
+                        <X className="w-6 h-6 text-black-100" />
                     </button>
 
                     {/* Title */}
