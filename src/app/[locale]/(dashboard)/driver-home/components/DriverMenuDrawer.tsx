@@ -23,7 +23,7 @@ const menuItems = [
 
 const bottomMenuItems = [
     { label: "Add More Riders", href: "/add-rider", icon: UserPlus },
-    { label: "Language", href: "/language", icon: Globe },
+    { label: "Language", href: "/driver-home/language", icon: Globe },
     { label: "FAQ", href: "/faq", icon: HelpCircle },
     { label: "Chat with Support", href: "/support", icon: MessageCircle },
 ];
