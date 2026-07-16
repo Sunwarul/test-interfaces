@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { LanguagePage } from "./components/LanguagePage";
 import { ErrorState } from "@/components/shared/ErrorState";
 
 interface ErrorPageProps {
@@ -14,5 +13,9 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
         console.error("Language page error:", error);
     }, [error]);
 
-    return <LanguagePage />;
+    return (
+        <div className="relative w-[414px] h-[896px] bg-white overflow-hidden rounded-[40px] flex flex-col">
+            <ErrorState onRetry={reset} />
+        </div>
+    );
 }

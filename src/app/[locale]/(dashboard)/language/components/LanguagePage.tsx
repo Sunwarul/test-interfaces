@@ -28,7 +28,7 @@ export function LanguagePage({ className }: LanguagePageProps) {
 
     const handleSelect = useCallback((language: LanguageItem) => {
         setSelectedLanguage(language);
-        toast.success(`Language changed to ${language.name}`);
+        toast.success(`Language changed to ${language.languageName}`);
     }, []);
 
     const handleBack = useCallback(() => {
