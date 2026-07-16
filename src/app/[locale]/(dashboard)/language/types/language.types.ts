@@ -3,10 +3,9 @@
  */
 
 export interface LanguageItem {
-    index: number;
     id: string;
     code: string;
-    languageName: string;
+    name: string;
 }
 
 export interface LanguagesListResponse {

@@ -20,9 +20,9 @@ export function LanguageRow({ language, isSelected, onSelect }: LanguageRowProps
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple focus-visible:ring-inset"
             )}
             aria-pressed={isSelected}
-            aria-label={`Select ${language.languageName}`}
+            aria-label={`Select ${language.name}`}
         >
-            <span className="text-body-bold text-black-100">{language.languageName}</span>
+            <span className="text-body-bold text-black-100">{language.name}</span>
 
             {/* Radio indicator */}
             <div
